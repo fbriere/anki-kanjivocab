@@ -1,0 +1,3 @@
+- store params in deck
+- check if kanji deck really holds kanji
+- warn if selecting the same model for both
