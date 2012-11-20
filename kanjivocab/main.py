@@ -23,6 +23,8 @@ from anki.cards import Card
 from anki.facts import Fact
 from anki.models import CardModel
 
+from sqlalchemy.orm import subqueryload, subqueryload_all
+
 from kanjivocab.unicode import is_kanji
 
 
@@ -30,6 +32,7 @@ def get_studied_kanji(deck, model, field, filter=None, mature=False):
     """Returns the (frozen) set of all studied kanji from a deck."""
     cards = deck.s.query(Card).\
             join(Card.cardModel).\
+            options(subqueryload_all(Card.fact, Fact.fields)).\
             filter(CardModel.modelId == model.id).\
             all()
 
@@ -65,6 +68,7 @@ def get_learnable_facts(deck, model, field, studied_kanji, require_kanji=True):
     kanji not yet studied, and those which do.
     """
     facts = deck.s.query(Fact).\
+            options(subqueryload(Fact.fields)).\
             filter(Fact.modelId == model.id).\
             all()
 
