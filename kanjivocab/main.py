@@ -28,7 +28,7 @@ from sqlalchemy.orm import subqueryload, subqueryload_all
 from kanjivocab.unicode import is_kanji
 
 
-def get_studied_kanji(deck, model, field, filter=None, mature=False):
+def get_studied_kanji(deck, model, field, filter=None):
     """Returns the (frozen) set of all studied kanji from a deck."""
     cards = deck.s.query(Card).\
             join(Card.cardModel).\
@@ -39,9 +39,6 @@ def get_studied_kanji(deck, model, field, filter=None, mature=False):
     if filter:
         filtered_ids = frozenset(deck.findCards(filter))
         cards = [c for c in cards if c.id in filtered_ids]
-
-    if mature:
-        cards = [c for c in cards if deck.cardIsMature(c)]
 
     kanji = [c.fact[field.name] for c in cards]
 

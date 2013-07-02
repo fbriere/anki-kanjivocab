@@ -129,10 +129,6 @@ class KanjiVocabDialog(QDialog, Ui_KanjiVocabDialog):
         return unicode(self.kanjiFilterLineEdit.text())
 
     @property
-    def kanji_mature(self):
-        return self.matureCheckBox.isChecked()
-
-    @property
     def require_kanji(self):
         return not self.includeNonKanjiCheckBox.isChecked()
 

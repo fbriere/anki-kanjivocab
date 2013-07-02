@@ -37,8 +37,7 @@ def onMenuEntry():
         studied_kanji = get_studied_kanji(deck=mw.deck,
                                           model=dialog.kanji_model,
                                           field=dialog.kanji_field,
-                                          filter=dialog.kanji_filter,
-                                          mature=dialog.kanji_mature)
+                                          filter=dialog.kanji_filter)
 
         mw.deck.updateProgress(_("Tagging vocabulary cards"))
 
