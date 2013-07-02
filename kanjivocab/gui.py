@@ -70,6 +70,6 @@ def init():
     """Hook this plugin into Anki."""
     action = QAction(_("Tag vocabulary cards based on kanji"), mw)
 
-    mw.mainWin.menuTools.addAction(action)
     mw.connect(action, SIGNAL("triggered()"), onMenuEntry)
+    mw.mainWin.menuTools.addAction(action)
 
