@@ -138,7 +138,7 @@ class KanjiVocabDialog(QDialog, Ui_KanjiVocabDialog):
 
     @property
     def tags(self):
-        return anki.utils.canonifyTags(unicode(self.tagsLineEdit.text()))
+        return unicode(self.tagsLineEdit.text())
 
     @property
     def delete_tags(self):
