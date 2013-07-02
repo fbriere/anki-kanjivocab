@@ -18,7 +18,7 @@
 # this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from ankiqt import mw
+from aqt import mw
 
 from PyQt4.QtGui import QDialog
 

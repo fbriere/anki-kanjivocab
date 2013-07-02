@@ -19,28 +19,26 @@
 
 
 import anki
-from anki.cards import Card
-from anki.facts import Fact
-from anki.models import CardModel
-
-from sqlalchemy.orm import subqueryload, subqueryload_all
+import anki.utils
 
 from kanjivocab.unicode import is_kanji
 
 
-def get_studied_kanji(deck, model, field, filter=None):
-    """Returns the (frozen) set of all studied kanji from a deck."""
-    cards = deck.s.query(Card).\
-            join(Card.cardModel).\
-            options(subqueryload_all(Card.fact, Fact.fields)).\
-            filter(CardModel.modelId == model.id).\
-            all()
+def get_studied_kanji(col, model, field, filter=None):
+    """Returns the (frozen) set of all studied kanji."""
+    search_str = 'note:"%s"' % model['name']
 
     if filter:
-        filtered_ids = frozenset(deck.findCards(filter))
-        cards = [c for c in cards if c.id in filtered_ids]
+        search_str += " (" + filter + ")"
 
-    kanji = [c.fact[field.name] for c in cards]
+    all_flds = col.db.list(
+        """select flds from notes join cards on notes.id = cards.nid
+            where cards.id in """ +
+        anki.utils.ids2str(col.findCards(search_str)))
+
+    idx = col.models.fieldMap(model)[field][0]
+
+    kanji = [anki.utils.splitFields(flds)[idx] for flds in all_flds]
 
     return frozenset(kanji)
 
@@ -60,23 +58,20 @@ def is_learnable(string, studied_kanji):
 
     return True if has_kanji else None
 
-def get_learnable_facts(deck, model, field, studied_kanji, require_kanji=True):
-    """Returns a pair of lists of facts: those whose field does not contain any
+def get_learnable_notes(col, model, field, studied_kanji, require_kanji=True):
+    """Returns a pair of lists of notes: those whose field does not contain any
     kanji not yet studied, and those which do.
     """
-    facts = deck.s.query(Fact).\
-            options(subqueryload(Fact.fields)).\
-            filter(Fact.modelId == model.id).\
-            all()
+    notes = [col.getNote(n) for n in col.findNotes('note:"%s"' % model['name'])]
 
     learnable = []
     not_learnable = []
 
-    for fact in facts:
-        tmp = is_learnable(fact[field.name], studied_kanji)
+    for note in notes:
+        tmp = is_learnable(note[field], studied_kanji)
         if tmp or (tmp is None and not require_kanji):
-            learnable.append(fact)
+            learnable.append(note)
         else:
-            not_learnable.append(fact)
+            not_learnable.append(note)
 
     return learnable, not_learnable

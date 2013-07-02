@@ -18,8 +18,9 @@
 # this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from ankiqt import mw, ui
 import anki
+from aqt import mw
+import aqt.tagedit
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -27,7 +28,7 @@ from PyQt4.QtGui import *
 from kanjivocab.ui_dialog import Ui_KanjiVocabDialog
 from kanjivocab.help import KanjiVocabHelp
 
-from operator import attrgetter
+from operator import itemgetter
 
 
 class KanjiVocabDialog(QDialog, Ui_KanjiVocabDialog):
@@ -41,7 +42,7 @@ class KanjiVocabDialog(QDialog, Ui_KanjiVocabDialog):
         self.setupUi(self)
 
         # Keep a copy of the list of models
-        self._models = sorted(mw.deck.models, key=attrgetter("name"))
+        self._models = sorted(mw.col.models.all(), key=itemgetter("name"))
 
         # TODO: We could try and guess what the default models should be
         self.kanji_model = self._models[0]
@@ -49,7 +50,7 @@ class KanjiVocabDialog(QDialog, Ui_KanjiVocabDialog):
 
         # Fill both model combo boxes
         def fillModelCombo(combo):
-            combo.addItems(QStringList([m.name for m in self._models]))
+            combo.addItems([m['name'] for m in self._models])
         fillModelCombo(self.kanjiModelCombo)
         fillModelCombo(self.vocabModelCombo)
 
@@ -61,8 +62,8 @@ class KanjiVocabDialog(QDialog, Ui_KanjiVocabDialog):
 
         # Cheat and replace tagsLineEdit with a TagEdit
         self.tagsLineEdit.hide()
-        self.tagsLineEdit = ui.tagedit.TagEdit(self)
-        self.tagsLineEdit.setDeck(mw.deck)
+        self.tagsLineEdit = aqt.tagedit.TagEdit(self)
+        self.tagsLineEdit.setCol(mw.col)
         self.tagsLayout.addWidget(self.tagsLineEdit)
         mw.connect(self.tagsLineEdit, SIGNAL("textChanged(const QString &)"),
                    self.on_tagsLineEdit_textChanged)
@@ -74,9 +75,9 @@ class KanjiVocabDialog(QDialog, Ui_KanjiVocabDialog):
     def updateFieldCombo(self, model, combo, default=None):
         """Refresh a field combo box based on a given model."""
         combo.clear()
-        for field in model.fieldModels:
-            combo.addItem(field.name, QVariant(field))
-            if field.name == default:
+        for field in mw.col.models.fieldNames(model):
+            combo.addItem(field, field)
+            if field == default:
                 combo.setCurrentIndex(combo.count() - 1)
 
     def setOkEnabled(self, enabled):
@@ -113,8 +114,8 @@ class KanjiVocabDialog(QDialog, Ui_KanjiVocabDialog):
 
 
     def _get_field(self, combo):
-        """Fetch the FieldModel object corresponding to the combo selection."""
-        return combo.itemData(combo.currentIndex()).toPyObject()
+        """Fetch the field name corresponding to the combo selection."""
+        return combo.itemData(combo.currentIndex())
 
     @property
     def kanji_field(self):

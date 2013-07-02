@@ -18,12 +18,13 @@
 # this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from ankiqt import mw, ui
+from aqt import mw
+import aqt.utils
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-from kanjivocab.main import get_studied_kanji, get_learnable_facts
+from kanjivocab.main import get_studied_kanji, get_learnable_notes
 from kanjivocab.dialog import KanjiVocabDialog
 
 
@@ -31,36 +32,34 @@ def onMenuEntry():
     """Callback for our menu entry."""
     dialog = KanjiVocabDialog()
     if dialog.exec_():
-        mw.deck.startProgress()
-        mw.deck.updateProgress(_("Reading list of studied kanji"))
+        mw.progress.start(immediate=True)
+        mw.progress.update(_("Reading list of studied kanji"))
 
-        studied_kanji = get_studied_kanji(deck=mw.deck,
+        studied_kanji = get_studied_kanji(col=mw.col,
                                           model=dialog.kanji_model,
                                           field=dialog.kanji_field,
                                           filter=dialog.kanji_filter)
 
-        mw.deck.updateProgress(_("Tagging vocabulary cards"))
+        mw.progress.update(_("Tagging vocabulary cards"))
 
-        undo = _("Tag vocabulary cards based on kanji")
-        mw.deck.setUndoStart(undo)
+        mw.checkpoint(_("Tag vocabulary cards based on kanji"))
 
-        learnable, not_learnable = get_learnable_facts(deck=mw.deck,
+        learnable, not_learnable = get_learnable_notes(col=mw.col,
                                                        model=dialog.vocab_model,
                                                        field=dialog.vocab_field,
                                                        studied_kanji=studied_kanji,
                                                        require_kanji=dialog.require_kanji)
 
-        mw.deck.addTags([f.id for f in learnable], dialog.tags)
+        mw.col.tags.bulkAdd([f.id for f in learnable], dialog.tags)
         if dialog.delete_tags:
-            mw.deck.deleteTags([f.id for f in not_learnable], dialog.tags)
+            mw.col.tags.bulkRem([f.id for f in not_learnable], dialog.tags)
 
-        mw.deck.setUndoEnd(undo)
-        mw.deck.finishProgress()
+        mw.progress.finish()
 
-        # FIXME: Is this all we need to do?
-        mw.deck.refreshSession()
+        # FIXME: Do we need to do something?
+        #mw.deck.refreshSession()
 
-        ui.utils.showInfo("Applied tags on %u out of %u facts (based on %u kanji)." % (
+        aqt.utils.showInfo("Applied tags on %u out of %u notes (based on %u kanji)." % (
             len(learnable),
             len(learnable) + len(not_learnable),
             len(studied_kanji)))
@@ -70,5 +69,5 @@ def init():
     action = QAction(_("Tag vocabulary cards based on kanji"), mw)
 
     mw.connect(action, SIGNAL("triggered()"), onMenuEntry)
-    mw.mainWin.menuTools.addAction(action)
+    mw.form.menuTools.addAction(action)
 
