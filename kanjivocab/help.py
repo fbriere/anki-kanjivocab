@@ -19,8 +19,7 @@
 
 
 from aqt import mw
-
-from PyQt4.QtGui import QDialog
+from aqt.qt import *
 
 from kanjivocab.ui_help import Ui_KanjiVocabHelp
 

@@ -19,10 +19,8 @@
 
 
 from aqt import mw
+from aqt.qt import *
 import aqt.utils
-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
 
 from kanjivocab.main import get_studied_kanji, get_learnable_notes
 from kanjivocab.dialog import KanjiVocabDialog

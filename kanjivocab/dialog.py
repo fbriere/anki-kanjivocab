@@ -20,10 +20,8 @@
 
 import anki
 from aqt import mw
+from aqt.qt import *
 import aqt.tagedit
-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
 
 from kanjivocab.ui_dialog import Ui_KanjiVocabDialog
 from kanjivocab.help import KanjiVocabHelp
