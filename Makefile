@@ -12,8 +12,11 @@ $(ZIPFILE): all
 
 zip: $(ZIPFILE)
 
-all clean:
+all clean::
 	$(MAKE) -C $(SUBDIR) $@
+
+clean::
+	rm -f $(ZIPFILE) *.pyc
 
 
 .PHONY: all clean zip
