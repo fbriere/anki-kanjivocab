@@ -22,7 +22,7 @@ from aqt import mw
 from aqt.qt import *
 import aqt.utils
 
-from kanjivocab.main import get_studied_kanji, get_learnable_notes
+from kanjivocab.main import tag_notes
 from kanjivocab.dialog import KanjiVocabDialog
 
 
@@ -31,24 +31,17 @@ def onMenuEntry():
     dialog = KanjiVocabDialog()
     if dialog.exec_():
         mw.progress.start(immediate=True)
-        mw.progress.update(_("Reading list of studied kanji"))
-
-        studied_kanji = get_studied_kanji(col=mw.col,
-                                          field=dialog.kanji_field,
-                                          filter=dialog.kanji_filter)
-
         mw.progress.update(_("Tagging vocabulary cards"))
 
         mw.checkpoint(_("Tag vocabulary cards based on kanji"))
 
-        learnable, not_learnable = get_learnable_notes(col=mw.col,
-                                                       field=dialog.vocab_field,
-                                                       studied_kanji=studied_kanji,
-                                                       require_kanji=dialog.require_kanji)
-
-        mw.col.tags.bulkAdd(learnable, dialog.tags)
-        if dialog.delete_tags:
-            mw.col.tags.bulkRem(not_learnable, dialog.tags)
+        tagged, not_tagged, kanji = tag_notes(col=mw.col,
+                                              kanji_field=dialog.kanji_field,
+                                              kanji_filter=dialog.kanji_filter,
+                                              vocab_field=dialog.vocab_field,
+                                              require_kanji=dialog.require_kanji,
+                                              tags=dialog.tags,
+                                              delete_tags=dialog.delete_tags)
 
         mw.progress.finish()
 
@@ -56,9 +49,9 @@ def onMenuEntry():
         #mw.deck.refreshSession()
 
         aqt.utils.showInfo("Applied tags on %u out of %u notes (based on %u kanji)." % (
-            len(learnable),
-            len(learnable) + len(not_learnable),
-            len(studied_kanji)))
+            len(tagged),
+            len(tagged) + len(not_tagged),
+            len(kanji)))
 
 def init():
     """Hook this plugin into Anki."""
