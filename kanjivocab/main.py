@@ -18,9 +18,6 @@
 # this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import anki
-import anki.utils
-
 from kanjivocab.find import get_notes_field
 from kanjivocab.unicode import is_kanji
 
