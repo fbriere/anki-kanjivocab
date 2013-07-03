@@ -25,9 +25,9 @@ from kanjivocab.find import get_notes_field
 from kanjivocab.unicode import is_kanji
 
 
-def get_studied_kanji(col, model, field, filter=""):
+def get_studied_kanji(col, field, filter=""):
     """Returns the (frozen) set of all studied kanji."""
-    notes = get_notes_field(col, model, field, filter)
+    notes = get_notes_field(col, field, filter)
     kanji = [field for id, field in notes]
     return frozenset(kanji)
 
@@ -47,11 +47,11 @@ def is_learnable(string, studied_kanji):
 
     return True if has_kanji else None
 
-def get_learnable_notes(col, model, field, studied_kanji, require_kanji=True):
+def get_learnable_notes(col, field, studied_kanji, require_kanji=True):
     """Returns a pair of lists of notes IDs: those whose field does not
     contain any kanji not yet studied, and those which do.
     """
-    notes = get_notes_field(col, model, field)
+    notes = get_notes_field(col, field)
 
     learnable = []
     not_learnable = []

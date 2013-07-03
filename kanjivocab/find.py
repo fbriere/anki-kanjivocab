@@ -20,16 +20,29 @@
 
 import anki
 import anki.find
-from anki.utils import splitFields
+from anki.utils import ids2str, splitFields
 
 
-def field_idx(col, model, field):
-    return col.models.fieldMap(model)[field][0]
+def field_map(col, field):
+    """Returns a dict mapping, for each model containing the specified field,
+    that model's ID (as a string) to the field's index."""
+    # This was copied from anki.find._findField
+    field = field.lower()
 
-def get_notes_field(col, model, field, query=""):
+    mods = {}
+    for m in col.models.all():
+        for f in m['flds']:
+            if f['name'].lower() == field:
+                mods[m['id']] = f['ord']
+
+    return mods
+
+def get_notes_field(col, field, query=""):
     """Returns a list of (note-id, field-contents) tuples for all notes whose
-    type matches model, restricted by an optional query."""
-    idx = field_idx(col, model, field)
+    type contains field, restricted by an optional query."""
+    models = field_map(col, field)
+    if not models:
+        return []
 
     # The following was mostly copied from anki.find.findNotes
     finder = anki.find.Finder(col)
@@ -45,10 +58,10 @@ def get_notes_field(col, model, field, query=""):
 
     sql = """select distinct n.id, n.mid, n.flds
         from cards c join notes n on c.nid=n.id
-        where n.mid = %s and %s""" % (
-            model['id'],
+        where n.mid in %s and %s""" % (
+            ids2str(models.keys()),
             preds)
 
     res = col.db.all(sql, *args)
 
-    return [ (id, splitFields(flds)[idx]) for id, mid, flds in res ]
+    return [ (id, splitFields(flds)[models[mid]]) for id, mid, flds in res ]

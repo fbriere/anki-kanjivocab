@@ -34,7 +34,6 @@ def onMenuEntry():
         mw.progress.update(_("Reading list of studied kanji"))
 
         studied_kanji = get_studied_kanji(col=mw.col,
-                                          model=dialog.kanji_model,
                                           field=dialog.kanji_field,
                                           filter=dialog.kanji_filter)
 
@@ -43,7 +42,6 @@ def onMenuEntry():
         mw.checkpoint(_("Tag vocabulary cards based on kanji"))
 
         learnable, not_learnable = get_learnable_notes(col=mw.col,
-                                                       model=dialog.vocab_model,
                                                        field=dialog.vocab_field,
                                                        studied_kanji=studied_kanji,
                                                        require_kanji=dialog.require_kanji)

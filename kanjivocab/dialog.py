@@ -19,14 +19,13 @@
 
 
 import anki
+import anki.find
 from aqt import mw
 from aqt.qt import *
 import aqt.tagedit
 
 from kanjivocab.ui_dialog import Ui_KanjiVocabDialog
 from kanjivocab.help import KanjiVocabHelp
-
-from operator import itemgetter
 
 
 class KanjiVocabDialog(QDialog, Ui_KanjiVocabDialog):
@@ -39,24 +38,16 @@ class KanjiVocabDialog(QDialog, Ui_KanjiVocabDialog):
         QDialog.__init__(self, mw)
         self.setupUi(self)
 
-        # Keep a copy of the list of models
-        self._models = sorted(mw.col.models.all(), key=itemgetter("name"))
+        # Fill both field combo boxes
+        fields = sorted(anki.find.fieldNames(mw.col, downcase=False))
+        def fillFieldCombo(combo, default):
+            for field in fields:
+                combo.addItem(field, field)
+                if field == default:
+                    combo.setCurrentIndex(combo.count() - 1)
 
-        # TODO: We could try and guess what the default models should be
-        self.kanji_model = self._models[0]
-        self.vocab_model = self._models[0]
-
-        # Fill both model combo boxes
-        def fillModelCombo(combo):
-            combo.addItems([m['name'] for m in self._models])
-        fillModelCombo(self.kanjiModelCombo)
-        fillModelCombo(self.vocabModelCombo)
-
-        # Fill both field combo boxes based on the default models
-        self.updateFieldCombo(self.kanji_model, self.kanjiFieldCombo,
-                              default=self.KANJI_DEFAULT_FIELD)
-        self.updateFieldCombo(self.vocab_model, self.vocabFieldCombo,
-                              default=self.VOCAB_DEFAULT_FIELD)
+        fillFieldCombo(self.kanjiFieldCombo, self.KANJI_DEFAULT_FIELD)
+        fillFieldCombo(self.vocabFieldCombo, self.VOCAB_DEFAULT_FIELD)
 
         # Cheat and replace tagsLineEdit with a TagEdit
         self.tagsLineEdit.hide()
@@ -70,32 +61,10 @@ class KanjiVocabDialog(QDialog, Ui_KanjiVocabDialog):
 
         self.setOkEnabled(False)
 
-    def updateFieldCombo(self, model, combo, default=None):
-        """Refresh a field combo box based on a given model."""
-        combo.clear()
-        for field in mw.col.models.fieldNames(model):
-            combo.addItem(field, field)
-            if field == default:
-                combo.setCurrentIndex(combo.count() - 1)
-
     def setOkEnabled(self, enabled):
         """Enable or disable the OK button."""
         self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(enabled)
 
-
-    @pyqtSignature("int")
-    def on_kanjiModelCombo_activated(self, index):
-        """Callback for when the kanji model selection changes."""
-        self.kanji_model = self._models[index]
-        self.updateFieldCombo(self.kanji_model, self.kanjiFieldCombo,
-                              default=self.KANJI_DEFAULT_FIELD)
-
-    @pyqtSignature("int")
-    def on_vocabModelCombo_activated(self, index):
-        """Callback for when the vocab model selection changes."""
-        self.vocab_model = self._models[index]
-        self.updateFieldCombo(self.vocab_model, self.vocabFieldCombo,
-                              default=self.VOCAB_DEFAULT_FIELD)
 
     @pyqtSignature("const QString &")
     def on_tagsLineEdit_textChanged(self, text):

@@ -16,26 +16,6 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_6">
       <item>
-       <layout class="QHBoxLayout" name="kanjiModelLayout">
-        <item>
-         <widget class="QLabel" name="kanjiModelLabel">
-          <property name="font">
-           <font>
-            <weight>50</weight>
-            <bold>false</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Model:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="kanjiModelCombo"/>
-        </item>
-       </layout>
-      </item>
-      <item>
        <layout class="QHBoxLayout" name="kanjiFieldLayout">
         <item>
          <widget class="QLabel" name="kanjiFieldLabel">
@@ -84,26 +64,6 @@
       <string>Vocabulary cards</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <layout class="QHBoxLayout" name="vocabModelLayout">
-        <item>
-         <widget class="QLabel" name="vocabModelLabel">
-          <property name="font">
-           <font>
-            <weight>50</weight>
-            <bold>false</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Model:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="vocabModelCombo"/>
-        </item>
-       </layout>
-      </item>
       <item>
        <layout class="QHBoxLayout" name="vocabFieldLayout">
         <item>
