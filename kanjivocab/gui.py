@@ -48,9 +48,9 @@ def onMenuEntry():
                                                        studied_kanji=studied_kanji,
                                                        require_kanji=dialog.require_kanji)
 
-        mw.col.tags.bulkAdd([f.id for f in learnable], dialog.tags)
+        mw.col.tags.bulkAdd(learnable, dialog.tags)
         if dialog.delete_tags:
-            mw.col.tags.bulkRem([f.id for f in not_learnable], dialog.tags)
+            mw.col.tags.bulkRem(not_learnable, dialog.tags)
 
         mw.progress.finish()
 

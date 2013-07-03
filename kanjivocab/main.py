@@ -59,8 +59,8 @@ def is_learnable(string, studied_kanji):
     return True if has_kanji else None
 
 def get_learnable_notes(col, model, field, studied_kanji, require_kanji=True):
-    """Returns a pair of lists of notes: those whose field does not contain any
-    kanji not yet studied, and those which do.
+    """Returns a pair of lists of notes IDs: those whose field does not
+    contain any kanji not yet studied, and those which do.
     """
     notes = [col.getNote(n) for n in col.findNotes('note:"%s"' % model['name'])]
 
@@ -70,8 +70,8 @@ def get_learnable_notes(col, model, field, studied_kanji, require_kanji=True):
     for note in notes:
         tmp = is_learnable(note[field], studied_kanji)
         if tmp or (tmp is None and not require_kanji):
-            learnable.append(note)
+            learnable.append(note.id)
         else:
-            not_learnable.append(note)
+            not_learnable.append(note.id)
 
     return learnable, not_learnable
