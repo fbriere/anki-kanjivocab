@@ -21,25 +21,14 @@
 import anki
 import anki.utils
 
+from kanjivocab.find import get_notes_field
 from kanjivocab.unicode import is_kanji
 
 
-def get_studied_kanji(col, model, field, filter=None):
+def get_studied_kanji(col, model, field, filter=""):
     """Returns the (frozen) set of all studied kanji."""
-    search_str = 'note:"%s"' % model['name']
-
-    if filter:
-        search_str += " (" + filter + ")"
-
-    all_flds = col.db.list(
-        """select flds from notes join cards on notes.id = cards.nid
-            where cards.id in """ +
-        anki.utils.ids2str(col.findCards(search_str)))
-
-    idx = col.models.fieldMap(model)[field][0]
-
-    kanji = [anki.utils.splitFields(flds)[idx] for flds in all_flds]
-
+    notes = get_notes_field(col, model, field, filter)
+    kanji = [field for id, field in notes]
     return frozenset(kanji)
 
 def is_learnable(string, studied_kanji):
@@ -62,16 +51,16 @@ def get_learnable_notes(col, model, field, studied_kanji, require_kanji=True):
     """Returns a pair of lists of notes IDs: those whose field does not
     contain any kanji not yet studied, and those which do.
     """
-    notes = [col.getNote(n) for n in col.findNotes('note:"%s"' % model['name'])]
+    notes = get_notes_field(col, model, field)
 
     learnable = []
     not_learnable = []
 
-    for note in notes:
-        tmp = is_learnable(note[field], studied_kanji)
+    for id, field in notes:
+        tmp = is_learnable(field, studied_kanji)
         if tmp or (tmp is None and not require_kanji):
-            learnable.append(note.id)
+            learnable.append(id)
         else:
-            not_learnable.append(note.id)
+            not_learnable.append(id)
 
     return learnable, not_learnable
