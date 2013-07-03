@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# kanjivocab - Anki plugin to tag vocabulary cards based on kanji
+# kanjivocab - Anki add-on to tag vocabulary cards based on kanji
 #
 # Copyright (c) 2012-2013  Frédéric Brière <fbriere@fbriere.net>
 #
