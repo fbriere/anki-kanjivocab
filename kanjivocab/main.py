@@ -68,7 +68,8 @@ def get_learnable_notes(col, field, studied_kanji, require_kanji=True):
 def tag_notes(col, kanji_field, vocab_field, tags,
               kanji_filter="", require_kanji=False, delete_tags=False):
     """Tags vocabulary notes based on kanji cards.  Returns a tuple of three
-    lists: tagged notes IDs, not tagged (or untagged) notes IDs, and kanji."""
+    elements: list of tagged notes IDs, list of not tagged (or untagged) notes
+    IDs, and set of kanji."""
     studied_kanji = get_studied_kanji(col, kanji_field, kanji_filter)
 
     learnable, not_learnable = get_learnable_notes(col,
