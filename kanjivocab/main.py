@@ -28,7 +28,7 @@ from kanjivocab.unicode import is_kanji
 def get_studied_kanji(col, field, filter=""):
     """Returns the (frozen) set of all studied kanji."""
     notes = get_notes_field(col, field, filter)
-    kanji = [field for id, field in notes]
+    kanji = [field for id, field in notes if is_kanji(field)]
     return frozenset(kanji)
 
 def is_learnable(string, studied_kanji):
