@@ -21,6 +21,7 @@
 from aqt import mw
 from aqt.qt import *
 
+import kanjivocab
 from kanjivocab.ui_help import Ui_KanjiVocabHelp
 
 
@@ -30,4 +31,7 @@ class KanjiVocabHelp(QDialog, Ui_KanjiVocabHelp):
     def __init__(self):
         QDialog.__init__(self, mw)
         self.setupUi(self)
+
+        self.aboutLabel.setText(self.aboutLabel.text() %
+                                {'version': kanjivocab.__version__})
 
