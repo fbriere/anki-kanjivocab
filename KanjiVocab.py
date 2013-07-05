@@ -1,2 +1,3 @@
-# Dummy file to make Anki load this plugin
-import kanjivocab
+from kanjivocab.gui import init
+
+init()
