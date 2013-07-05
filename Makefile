@@ -30,7 +30,7 @@ $(BUILD_SUBDIR):
 	mkdir -p $(BUILD_SUBDIR)
 
 $(ZIPFILE): build
-	cd $(BUILD_DIR) && $(ZIP) ../$(ZIPFILE) --recurse-paths *
+	cd $(BUILD_DIR) && $(ZIP) ../$(ZIPFILE) $(NAME).py $(SUBDIR)/*.py
 
 zip: $(ZIPFILE)
 
